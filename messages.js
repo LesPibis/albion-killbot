@@ -72,7 +72,8 @@ exports.embedEvent = (event, locale) => {
       url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),
       description,
       thumbnail: {
-        url: "https://user-images.githubusercontent.com/13356774/76129825-ee15b580-5fde-11ea-9f77-7ae16bd65368.png",
+        // url: "https://user-images.githubusercontent.com/13356774/76129825-ee15b580-5fde-11ea-9f77-7ae16bd65368.png",
+        url: "https://i.imgur.com/qt23ZKP.png",
       },
       fields: [
         {
@@ -119,17 +120,30 @@ exports.embedEventAsImage = async (event, locale) => {
   const l = exports.getI18n(locale);
 
   const good = event.good;
-  const title = l.__("KILL.EVENT", {
+  /*const title = l.__("KILL.EVENT", {
     killer: event.Killer.Name,
     victim: event.Victim.Name,
-  });
+  });*/
   const filename = `${event.EventId}-event.png`;
+  const description = `[${l.__("KILL.EVENT", {
+    killer: event.Killer.Name,
+    victim: event.Victim.Name,
+  })}](${KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId)})`;
+  let footer = "";
+  const hasInventory = event.Victim.Inventory.filter(i => i != null).length > 0;
+
+  if (hasInventory) {
+    footer = good
+      ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
+      : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
+  }
 
   return {
     embed: {
       color: good ? GREEN : RED,
-      title,
-      url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),
+      description: description,
+      /*title,
+      url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),*/
       files: [
         {
           attachment: await generateEventImage(event),
@@ -139,6 +153,7 @@ exports.embedEventAsImage = async (event, locale) => {
       image: {
         url: `attachment://${filename}`,
       },
+      footer: footer,
     },
   };
 };
@@ -147,9 +162,16 @@ exports.embedInventoryAsImage = async (event, locale) => {
   const l = exports.getI18n(locale);
   const good = event.good;
   const filename = `${event.EventId}-inventory.png`;
+  const description = l.__("KILL.VICTIM_INVENTORY", {
+    victim: event.Victim.Name,
+  });
+  const footer = good
+    ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
+    : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
 
   return {
     embed: {
+      description: description,
       color: good ? GREEN : RED,
       url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),
       files: [
@@ -161,6 +183,7 @@ exports.embedInventoryAsImage = async (event, locale) => {
       image: {
         url: `attachment://${filename}`,
       },
+      footer: footer,
     },
   };
 };

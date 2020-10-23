@@ -16,7 +16,7 @@ const DEFAULT_CONFIG = {
     battles: true,
     rankings: true,
   },
-  lang: "en",
+  lang: "es",
 };
 
 exports.getConfig = async guild => {

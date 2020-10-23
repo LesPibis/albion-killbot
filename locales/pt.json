@@ -25,7 +25,10 @@
     "VICTIM_GUILD": "Guilda da Vítima",
     "NO_GUILD": "Sem guilda",
     "KILLER_IP": "IP do Matador",
-    "VICTIM_IP": "IP da Vítima"
+    "VICTIM_IP": "IP da Vítima",
+    "VICTIM_INVENTORY": "{{ victim }}'s Inventory:",
+    "FOOTER_GOOD": "{{ killer }} esta mamadísimo!!!",
+    "FOOTER_BAD": "{{ victim }} malardo!!!"
   },
   "BATTLE": {
     "EVENT": "Ocorreu uma batalha entre {{ guilds }} guildas!",

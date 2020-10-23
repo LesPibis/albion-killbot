@@ -1,6 +1,6 @@
 {
-  "JOIN": "¡Hola a todos! Soy Albion Killbot. Si es administrador, configúreme escribiendo ayuda y vea qué puedo hacer.",
-  "LEAVE": "Lamentablemente, tengo problemas para enviar mensajes a su servidor {{ guild }}, así que me tengo que ir now =(\nte veo pronto!",
+  "JOIN": "¡Hola a todos! Soy Albion Killbot. Si eres administrador, configúrame escribiendo !Help para ver qué puedo hacer.",
+  "LEAVE": "Lamentablemente, tengo problemas para enviar mensajes a tú servidor {{ guild }}, así que me tengo que ir ahora =(\nTe veo pronto!",
   "NO_PERMISSION": "Lo sentimos, solo acepto los comandos de los administradores del servidor.",
   "CONFIG_NOT_SET": "ADVERTENCIA: no se puede mantener la configuración del servidor. Se revertirán al reiniciar el bot.",
   "CHANNEL_NOT_SET": "ADVERTENCIA: el canal para enviar notificaciones no está configurado. Utilice !Channel [Canal] para configurarlo.",
@@ -8,24 +8,27 @@
   "TEST_FAIL": "NO tengo permisos para enviar mensajes al canal {{{ channel }}}.",
   "MODES_AVAILABLE": "Modos disponibles para esta configuración: {{ modes }}",
   "GENERAL": {
-    "ENABLED": "enabled",
-    "DISABLED": "disabled"
+    "ENABLED": "habilitado",
+    "DISABLED": "deshabilitado"
   },
   "KILL": {
-    "EVENT": "{{ killer }} Mató {{ victim }}!",
+    "EVENT": "{{ killer }} Mató a {{ victim }}!",
     "SOLO_0": "Muerte casual! Muerte en solitario!!!",
     "SOLO_1": "Fue un asesinato en solitario.",
-    "SOLO_2": "A clean solo kill.",
+    "SOLO_2": "Una muerte limpia en solitario.",
     "SOLO_3": "No se necesitan asistencias.",
-    "SOLO_4": "Obtener rekt! Matar solo.",
+    "SOLO_4": "Destrozado! Mata en solitario.",
     "SOLO_5": "Solo asesinado. No se hicieron preguntas.",
-    "ASSIST": "Ayuda(s): {{{ assists }}}",
+    "ASSIST": "Asistencia(s): {{{ assists }}}",
     "FAME": "Fama por Muerte",
-    "KILLER_GUILD": "Gremio de Asesino",
-    "VICTIM_GUILD": "Gremio de Victima",
+    "KILLER_GUILD": "Gremio del Asesino",
+    "VICTIM_GUILD": "Gremio del Victima",
     "NO_GUILD": "Sin Gremio",
-    "KILLER_IP": "IP de el Asesino",
-    "VICTIM_IP": "IP de la Victima"
+    "KILLER_IP": "IP del Asesino",
+    "VICTIM_IP": "IP de la Victima",
+    "VICTIM_INVENTORY": "Inventario de {{ victim }}:",
+    "FOOTER_GOOD": "{{ killer }} esta mamadísimo!!!",
+    "FOOTER_BAD": "{{ victim }} malardo!!!"
   },
   "BATTLE": {
     "EVENT": "Ocurrio una batalla entre {{ guilds }} guilds!",
