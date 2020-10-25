@@ -40,7 +40,9 @@ client.on("message", async message => {
   if (!message.content || !message.content.startsWith(COMMAND_PREFIX)) return;
   if (!message.member) return;
   // For now, bot only accepts commands from server admins
-  if (!message.member.hasPermission("ADMINISTRATOR")) return;
+  if (process.env.DEBUG == "false") {
+    if (!message.member.hasPermission("ADMINISTRATOR")) return;
+  }
 
   // This is needed to inherit configs to guild object
   const guild = message.guild;
