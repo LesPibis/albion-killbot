@@ -25,7 +25,10 @@
     "VICTIM_GUILD": "Victim's Guild",
     "NO_GUILD": "No guild",
     "KILLER_IP": "Killer's IP",
-    "VICTIM_IP": "Victim's IP"
+    "VICTIM_IP": "Victim's IP",
+    "VICTIM_INVENTORY": "{{ victim }}'s Inventory:",
+    "FOOTER_GOOD": "{{ killer }} esta mamadísimo!!!",
+    "FOOTER_BAD": "{{ victim }} malardo!!!"
   },
   "BATTLE": {
     "EVENT": "A battle ocurred between {{ guilds }} guilds!",
