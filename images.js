@@ -175,7 +175,6 @@ const hasSupportHealingDone = participants =>
 
 exports.generateEventImage = async event => {
   const hasSupportHealingSection = hasSupportHealingDone(event.Participants);
-  logger.warn(`${hasSupportHealingSection} <<<...`);
   const height = hasSupportHealingSection ? 1450 : 1250;
   let canvas = createCanvas(1600, height);
   const w = canvas.width;
