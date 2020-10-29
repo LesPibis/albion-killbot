@@ -384,7 +384,6 @@ exports.generateEventImage = async event => {
     }
   });
   drawAssistBar(damageParticipants, 35, 1050, 1530, 40, 20);
-  
 
   // support healing assist bar
   if (hasSupportHealingSection) {
