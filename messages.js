@@ -124,13 +124,15 @@ exports.embedEventAsImage = async (event, locale) => {
     killer: event.Killer.Name,
     victim: event.Victim.Name,
   })}](${KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId)})`;
-  let footer = "";
+  let footer;
   const hasInventory = event.Victim.Inventory.filter(i => i != null).length > 0;
 
-  if (hasInventory) {
-    footer = good
-      ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
-      : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
+  if (!hasInventory) {
+    footer = {
+      text: good
+        ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
+        : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name }),
+    };
   }
 
   return {
@@ -158,9 +160,11 @@ exports.embedInventoryAsImage = async (event, locale) => {
   const description = l.__("KILL.VICTIM_INVENTORY", {
     victim: event.Victim.Name,
   });
-  const footer = good
-    ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
-    : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
+  const footer = {
+    text: good
+      ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
+      : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name }),
+  };
 
   return {
     embed: {
