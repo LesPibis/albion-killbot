@@ -10,6 +10,15 @@ const RED = 13369344;
 const BATTLE = 16752981;
 const RANKING_LINE_LENGTH = 23;
 
+const getFooter = (killerName, victimName, locale, good) => {
+  const l = exports.getI18n(locale);
+  return {
+    text: good
+      ? l.__("KILL.FOOTER_GOOD", { killer: killerName })
+      : l.__("KILL.FOOTER_BAD", { victim: victimName }),
+  };
+};
+
 exports.getI18n = (locale = "en") => {
   const l = {};
   i18n.configure({
@@ -124,14 +133,8 @@ exports.embedEventAsImage = async (event, locale) => {
     killer: event.Killer.Name,
     victim: event.Victim.Name,
   })}](${KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId)})`;
-  let footer = "";
+  const footer = hasInventory ? null : getFooter(event.Killer.Name, event.Victim.Name, locale, good);
   const hasInventory = event.Victim.Inventory.filter(i => i != null).length > 0;
-
-  if (hasInventory) {
-    footer = good
-      ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
-      : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
-  }
 
   return {
     embed: {
@@ -158,9 +161,7 @@ exports.embedInventoryAsImage = async (event, locale) => {
   const description = l.__("KILL.VICTIM_INVENTORY", {
     victim: event.Victim.Name,
   });
-  const footer = good
-    ? l.__("KILL.FOOTER_GOOD", { killer: event.Killer.Name })
-    : l.__("KILL.FOOTER_BAD", { killer: event.Victim.Name });
+  const footer = getFooter(event.Killer.Name, event.Victim.Name, locale, good);
 
   return {
     embed: {
