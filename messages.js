@@ -72,8 +72,7 @@ exports.embedEvent = (event, locale) => {
       url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),
       description,
       thumbnail: {
-        // url: "https://user-images.githubusercontent.com/13356774/76129825-ee15b580-5fde-11ea-9f77-7ae16bd65368.png",
-        url: "https://i.imgur.com/qt23ZKP.png",
+        url: "https://lespibis.github.io/albion_killbot_assets.github.io/imgs/icon.png",
       },
       fields: [
         {
@@ -120,10 +119,6 @@ exports.embedEventAsImage = async (event, locale) => {
   const l = exports.getI18n(locale);
 
   const good = event.good;
-  /*const title = l.__("KILL.EVENT", {
-    killer: event.Killer.Name,
-    victim: event.Victim.Name,
-  });*/
   const filename = `${event.EventId}-event.png`;
   const description = `[${l.__("KILL.EVENT", {
     killer: event.Killer.Name,
@@ -142,8 +137,6 @@ exports.embedEventAsImage = async (event, locale) => {
     embed: {
       color: good ? GREEN : RED,
       description: description,
-      /*title,
-      url: KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId),*/
       files: [
         {
           attachment: await generateEventImage(event),
