@@ -5,58 +5,24 @@ const axios = require("axios");
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const logger = require("./logger")("images");
 const { sleep, digitsFormatter, fileSizeFormatter } = require("./utils");
+const LOCAL_ASSETS_URL = process.env.LOCAL_ASSETS_URL;
 
 registerFont(path.join(__dirname, "assets", "fonts", "Roboto-Regular.ttf"), {
   family: "Roboto",
   weight: "Normal",
 });
 
-const CDNS = [
-  {
-    url: "https://render.albiononline.com/v1/item/{type}.png?quality={quality}",
-    qualitySupport: true,
-    trash: true,
-  },
-  {
-    url: "https://gameinfo.albiononline.com/api/gameinfo/items/{type}",
-    qualitySupport: true,
-    trash: true,
-  },
-];
-
-const TMPDIR = path.join(os.tmpdir(), "albion-killbot-cache");
-// Ensure this exists
-if (!fs.existsSync(TMPDIR)) {
-  fs.mkdirSync(TMPDIR);
-}
-
+const CDN = `${LOCAL_ASSETS_URL}/item/{type}?quality={quality}`
 const IMAGE_MIME = "image/png";
-const IMAGE_OPTIONS = {
-  compressionLevel: 7,
-};
+const IMAGE_OPTIONS = { compressionLevel: 7 };
 
-let S3;
-if (process.env.AWS_ACCESS_KEY && process.env.AWS_SECRET_KEY) {
-  const AWS = require("aws-sdk");
-  S3 = new AWS.S3({
-    apiVersion: "2006-03-01",
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
-    region: process.env.AWS_REGION || "us-east-1",
-    maxRetries: 3,
-    httpOptions: {
-      timeout: 60000,
-    },
-  });
-}
-
-const drawImage = async (ctx, src, x, y, sw, sh) => {
-  if (!src) return;
+const drawImage = async (ctx, url, x, y, sw, sh) => {
+  if (!url) return;
   let img;
   try {
-    img = await loadImage(src);
+    img = await loadImage(url);
   } catch (e) {
-    logger.error(`[images] Error loading image: ${src} (${e})`);
+    logger.error(`[images] Error loading image: ${url} (${e})`);
     img = await loadImage("./assets/notfound.png");
   }
   if (sw && sh) ctx.drawImage(img, x, y, sw, sh);
@@ -66,92 +32,7 @@ const drawImage = async (ctx, src, x, y, sw, sh) => {
 const locks = {};
 const missings = {};
 // Download items from CDN, cache them and return path to cached image
-const getItemFile = async (item, tries = 0) => {
-  // If we already tried 2 times and failed, try without parameters (and don't save to s3)
-  const forceResult = tries > 3;
-  const itemFileName = `${item.Type}_Q${item.Quality}`;
-  const itemFile = path.join(TMPDIR, itemFileName);
-  if (forceResult) missings[itemFile] = true;
-  if (missings[itemFile]) return null;
-  if (fs.existsSync(itemFile)) {
-    const stat = fs.statSync(itemFile);
-    if (stat.size > 0) return itemFile;
-  }
-
-  // Lock the file while the Write Stream is open
-  if (locks[itemFile]) {
-    logger.warn(`${itemFile} is locked. Trying again...`);
-    await sleep(10000);
-    return getItemFile(item, tries);
-  }
-  locks[itemFile] = true;
-  const writer = fs.createWriteStream(itemFile);
-  writer.on("finish", () => {
-    locks[itemFile] = false;
-  });
-  // Check if file is available on S3 bucket
-  if (S3) {
-    try {
-      const data = await S3.getObject({
-        Bucket: process.env.AWS_BUCKET || "albion-killbot",
-        Key: itemFileName,
-      }).promise();
-      return new Promise((resolve, reject) => {
-        writer.on("finish", () => resolve(itemFile));
-        writer.on("error", e => reject(e));
-        writer.end(data.Body);
-      });
-    } catch (e) {
-      logger.error(`[images] Unable to download file from S3 (${e})`);
-    }
-  }
-  logger.debug(`[images] Downloading new file from CDNs: ${itemFileName}`);
-  for (let cdn of CDNS) {
-    // If the CDN does not support quality and item has Quality, skip this cdn
-    if (!cdn.qualitySupport && item.Quality > 0) continue;
-    // If trash item is outdated, skip
-    if (!cdn.trash && item.Type.includes("_TRASH")) continue;
-
-    const url = cdn.url.replace("{type}", item.Type).replace("{quality}", item.Quality);
-    const params = {};
-    if (!forceResult) {
-      params.quality = item.Quality;
-    }
-    try {
-      const response = await axios.get(url, {
-        params,
-        timeout: 30000,
-        responseType: "stream",
-      });
-      response.data.pipe(writer);
-      return new Promise((resolve, reject) => {
-        writer.on("finish", () => {
-          // If S3 is set, upload to bucket before returning
-          if (S3 && !forceResult) {
-            logger.debug(`[images] Uploading new file to S3: ${itemFileName}`);
-            try {
-              S3.putObject({
-                Body: fs.createReadStream(itemFile),
-                Bucket: process.env.AWS_BUCKET || "albion-killbot",
-                Key: itemFileName,
-              }).promise();
-            } catch (e) {
-              logger.error(`[images] Unable to upload file to S3 (${e})`);
-            }
-          }
-
-          resolve(itemFile);
-        });
-        writer.on("error", e => reject(e));
-      });
-    } catch (e) {
-      logger.error(`[images] Unable to download ${url} (${e})`);
-      locks[itemFile] = false;
-    }
-  }
-  await sleep(5000);
-  return getItemFile(item, tries + 1);
-};
+const getItemFile = item => CDN.replace("{type}", item.Type).replace("{quality}", item.Quality);
 
 const drawItem = async (ctx, item, x, y, block_size = 217) => {
   if (!item) return await drawImage(ctx, "./assets/slot.png", x, y, block_size, block_size);
