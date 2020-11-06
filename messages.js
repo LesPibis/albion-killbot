@@ -133,8 +133,8 @@ exports.embedEventAsImage = async (event, locale) => {
     killer: event.Killer.Name,
     victim: event.Victim.Name,
   })}](${KILL_URL.replace("{lang}", l.getLocale()).replace("{kill}", event.EventId)})`;
-  const footer = hasInventory ? null : getFooter(event.Killer.Name, event.Victim.Name, locale, good);
   const hasInventory = event.Victim.Inventory.filter(i => i != null).length > 0;
+  const footer = hasInventory ? null : getFooter(event.Killer.Name, event.Victim.Name, locale, good);
 
   return {
     embed: {
